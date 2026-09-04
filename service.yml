@@ -1,0 +1,120 @@
+name: mongoku
+icon: mongodb
+type: service
+title: Mongoku
+scalable: false
+
+options:
+- version: '2.11'
+  tag: '2.11.2'
+  default: true
+
+endpoints:
+- name: mongoku
+  ports:
+  - name: http
+    number: 3100
+    protocol: http
+
+labels:
+- mongoku
+- database-admin
+- mongodb-admin
+
+tokens:
+- name: admin_password
+  generate:
+    regex: '[0-9a-z]{32}'
+
+env:
+- name: MONGOKU_AUTH_BASIC
+  value: 'admin:{{admin_password}}'
+- name: MONGOKU_EXCLUDE_DATABASES
+  value: admin,config,local
+- name: MONGOKU_SERVER_ORIGIN
+  value: '{{service.primaryURL}}'
+- name: MONGOKU_SERVER_PORT
+  value: '3100'
+
+settings:
+- name: read_only
+  title: Read-only mode
+  description: Prevent write operations from the Mongoku interface.
+  default: 'false'
+  var: MONGOKU_READ_ONLY_MODE
+
+links:
+- name: db
+  title: MongoDB database
+  required: true
+  env:
+  - name: MONGOKU_DEFAULT_HOST
+    value: '{{link.database.url}}'
+    secret: true
+  selectors:
+  - type: db
+    labels:
+    - mongodb
+
+helm:
+  name: wodby
+  source: oci://registry-1.docker.io/wodby/stateless
+  chart: oci://registry-1.docker.io/wodby/stateless
+  version: 0.2.0
+  valueMappings:
+    replicas: replicaCount
+    serviceAccountName: serviceAccount.name
+    serviceAccountCreate: serviceAccount.create
+  values:
+  - name: containerName
+    value: mongoku
+  - name: containerPorts
+    value:
+    - name: http
+      containerPort: 3100
+      protocol: TCP
+  - name: startupProbe
+    value:
+      tcpSocket:
+        port: http
+      periodSeconds: 2
+      timeoutSeconds: 1
+      failureThreshold: 60
+  - name: livenessProbe
+    value:
+      tcpSocket:
+        port: http
+      periodSeconds: 10
+      timeoutSeconds: 2
+      failureThreshold: 6
+  - name: readinessProbe
+    value:
+      tcpSocket:
+        port: http
+      periodSeconds: 5
+      timeoutSeconds: 1
+      failureThreshold: 3
+
+workloads:
+- name: main
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: '{{helm.release}}'
+  kind: deployment
+  primary: true
+  helm:
+    labels: podLabels
+    annotations: podAnnotations
+    volumes: extraVolumes
+  containers:
+  - name: mongoku
+    image: huggingface/mongoku
+    helm:
+      resources: resources
+      env: envVars
+      mounts: extraVolumeMounts
+      image:
+        registry: image.registry
+        repository: image.repository
+        tag: image.tag
+        pullPolicy: image.pullPolicy
