@@ -2,6 +2,7 @@ name: mongoku
 icon: mongodb
 type: service
 title: Mongoku
+guidance: GUIDANCE.md
 scalable: false
 
 options:
