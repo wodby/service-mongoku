@@ -30,6 +30,7 @@ tokens:
 env:
 - name: MONGOKU_AUTH_BASIC
   value: 'admin:{{admin_password}}'
+  secret: true
 - name: MONGOKU_EXCLUDE_DATABASES
   value: admin,config,local
 - name: MONGOKU_SERVER_ORIGIN
