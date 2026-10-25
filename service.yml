@@ -7,7 +7,7 @@ scalable: false
 
 options:
 - version: '2.11'
-  tag: '2.11.3'
+  tag: '2.11.4'
   default: true
 
 endpoints:
