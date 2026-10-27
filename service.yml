@@ -7,7 +7,7 @@ scalable: false
 
 options:
 - version: '2.11'
-  tag: '2.11.4'
+  tag: '2.11.5'
   default: true
 
 endpoints:
@@ -61,7 +61,7 @@ helm:
   name: wodby
   source: oci://registry-1.docker.io/wodby/stateless
   chart: oci://registry-1.docker.io/wodby/stateless
-  version: 0.3.0
+  version: 0.4.0
   valueMappings:
     replicas: replicaCount
     serviceAccountName: serviceAccount.name
