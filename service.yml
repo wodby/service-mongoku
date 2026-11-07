@@ -110,6 +110,10 @@ workloads:
   containers:
   - name: mongoku
     image: huggingface/mongoku
+    resources:
+      request:
+        cpu: 10
+        memory: 64
     helm:
       resources: resources
       env: envVars
