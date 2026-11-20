@@ -8,6 +8,7 @@ scalable: false
 options:
 - version: '2.11'
   tag: '2.11.5'
+  digest: sha256:6ff83f0de8e82924eb3e4dd2d259ddcbce6b6700fdbf97e6e6ad5d60ca0bf053
   default: true
 
 endpoints:
